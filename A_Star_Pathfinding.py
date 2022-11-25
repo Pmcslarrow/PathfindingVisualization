@@ -87,7 +87,6 @@ class Box:
         pygame.draw.rect(window, color, (self.row * BOX_WIDTH, self.col * BOX_HEIGHT, BOX_WIDTH - 2, BOX_HEIGHT - 2))
 
 
-# Button("Click here",(100, 100), 50, 30,"navy")
 class Button:
     def __init__(self, text, x, y, width, height, font_size, color):
         self.text = text
@@ -107,9 +106,6 @@ class Button:
         WINDOW.blit(text, text_rect)
         pygame.display.update()
 
-    def click(self, event):
-        print("Clicked!")
-
 
 def draw_boxes(grid):
     WINDOW.fill(BLACK)
@@ -128,13 +124,6 @@ def draw_menu():
     text = font.render("Welcome to the pathfinding visualizer!", True, BLACK)
     text_rect = text.get_rect(center=(WIDTH/2, 100))
     WINDOW.blit(text, text_rect)
-
-    a_star_button = Button("a_star", WIDTH / 2 - 100, 300, 200, 50, 40, "navy")
-    dijkstra_button = Button("dijkstra", WIDTH / 2 - 100, 400, 200, 50, 40, "navy")
-
-
-    pygame.display.update()
-
 
 # Creating Grid
 for i in range(COLS):
@@ -236,6 +225,7 @@ def A_STAR(draw_boxes, grid, start, end):
 
 def main():
     # Standard pygame event loop
+    algorithm = ""
     inMenu = True
     started = False
     start = grid[1][1]
@@ -247,10 +237,19 @@ def main():
                 pygame.quit()
                 sys.exit()
             if inMenu:
-                # a_star= x1: WIDTH / 2 - 100   x2: WIDTH / 2 + 100  y1: 400  y2: 450
                 draw_menu()
-                inMenu = False
-                #if event.type == pygame.MOUSE_DOWn
+                a_star_button = Button("A*", WIDTH / 2 - 100, 300, 200, 50, 40, "navy")
+                dijkstra_button = Button("Dijkstra", WIDTH / 2 - 100, 400, 200, 50, 40, "navy")
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    if x >= WIDTH / 2 - 100 and x <= (WIDTH / 2 - 100) + 200 and y >= 300 and y <= 350:
+                        inMenu = False
+                        algorithm = "A*"
+
+                    if x >= WIDTH / 2 - 100 and x <= (WIDTH / 2 - 100) + 200 and y >= 400 and y <= 450:
+                        print("Opening Dijkstra")
+
             else:
                 if event.type == pygame.MOUSEMOTION:
                     x = pygame.mouse.get_pos()[0]
@@ -291,7 +290,11 @@ def main():
                             for spot in i:
                                 spot.update_neighbors(grid)
 
-                        A_STAR(lambda: draw_boxes(grid),  grid, start, end)
+                        if algorithm == "A*":
+                            A_STAR(lambda: draw_boxes(grid),  grid, start, end)
+                        else:
+                            pass
+                           # DIJKSTRA()
   
         pygame.display.flip()
 main()
