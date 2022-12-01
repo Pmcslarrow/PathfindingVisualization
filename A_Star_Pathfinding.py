@@ -220,6 +220,15 @@ def A_STAR(draw_boxes, grid, start, end):
 
     return False
 
+
+def DIJKSTRA(draw_boxes, grid, start, end):
+    print("CODE HERE")
+    return
+
+
+def BFS(draw_boxes, grid, start, end):
+    print("CODE HERE")
+    return
     
 
 
@@ -240,6 +249,8 @@ def main():
                 draw_menu()
                 a_star_button = Button("A*", WIDTH / 2 - 100, 300, 200, 50, 40, "navy")
                 dijkstra_button = Button("Dijkstra", WIDTH / 2 - 100, 400, 200, 50, 40, "navy")
+                BFS_button = Button("BFS", WIDTH / 2 - 100, 500, 200, 50, 40, "navy")
+
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
@@ -248,7 +259,13 @@ def main():
                         algorithm = "A*"
 
                     if x >= WIDTH / 2 - 100 and x <= (WIDTH / 2 - 100) + 200 and y >= 400 and y <= 450:
-                        print("Opening Dijkstra")
+                        inMenu = False
+                        algorithm = "Dijkstra"
+
+                    if x >= WIDTH / 2 - 100 and x <= (WIDTH / 2 - 100) + 200 and y >= 500 and y <= 550:
+                        inMenu = False
+                        algorithm = "BFS"
+
 
             else:
                 if event.type == pygame.MOUSEMOTION:
@@ -292,9 +309,10 @@ def main():
 
                         if algorithm == "A*":
                             A_STAR(lambda: draw_boxes(grid),  grid, start, end)
-                        else:
-                            pass
-                           # DIJKSTRA()
+                        elif algorithm == "Dijkstra":
+                            DIJKSTRA(lambda: draw_boxes(grid),  grid, start, end)
+                        elif algorithm == "BFS":
+                            BFS(lambda: draw_boxes(grid),  grid, start, end)
   
         pygame.display.flip()
 main()
