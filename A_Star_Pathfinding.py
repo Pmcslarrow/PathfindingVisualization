@@ -3,7 +3,7 @@ import pygame
 import sys
 import time
 from math import sqrt
-from queue import PriorityQueue
+from queue import PriorityQueue, Queue
 
 # CONSTANTS
 HEIGHT = 800
@@ -86,6 +86,8 @@ class Box:
     def draw(self, window, color):
         pygame.draw.rect(window, color, (self.row * BOX_WIDTH, self.col * BOX_HEIGHT, BOX_WIDTH - 2, BOX_HEIGHT - 2))
 
+    def __lt__(self, other):
+            return
 
 class Button:
     def __init__(self, text, x, y, width, height, font_size, color):
@@ -131,7 +133,6 @@ for i in range(COLS):
     for j in range(ROWS):
         arr.append(Box(i, j))
     grid.append(arr)
-grid[1][1].color = START_COLOR
 
 
 def HEURISTIC( p1, p2 ):
@@ -220,24 +221,88 @@ def A_STAR(draw_boxes, grid, start, end):
 
     return False
 
-
+"""
+function Dijkstra(Graph, source):
+ 2      
+ 3      for each vertex v in Graph.Vertices:
+ 4          dist[v] ← INFINITY
+ 5          prev[v] ← UNDEFINED
+ 6          add v to Q
+ 7      dist[source] ← 0
+ 8      
+ 9      while Q is not empty:
+10          u ← vertex in Q with min dist[u]
+11          remove u from Q
+12          
+13          for each neighbor v of u still in Q:
+14              alt ← dist[u] + Graph.Edges(u, v)
+15              if alt < dist[v]:
+16                  dist[v] ← alt
+17                  prev[v] ← u
+18
+19      return dist[], prev[]
+"""
 def DIJKSTRA(draw_boxes, grid, start, end):
-    print("CODE HERE")
     return
 
+
+class myQueue:
+    def __init__(self):
+        self.lst = []
+        self.size = 0
+
+    def enqueue(self, value):
+        self.lst.append(value)
+        self.size += 1
+
+    def dequeue(self):
+        if self.size > 0:
+            self.size -= 1
+            return self.lst.pop(0)
+        
+    def isEmpty(self):
+        return self.size == 0
 
 def BFS(draw_boxes, grid, start, end):
-    print("CODE HERE")
-    return
-    
 
+    visited = {}
+    prev = {}
+    visited[start] = True
+    queue = myQueue()
+    queue.enqueue(start)
+
+    while not queue.isEmpty():
+        curr = queue.dequeue()
+        if curr == end:
+            curr.make_end()
+            reconstruct_path(grid, prev, curr)
+            break
+
+        curr.make_open()
+        for neighbor in curr.neighbors:
+            if neighbor in visited:
+                neighbor.make_closed()
+            else:
+                prev[neighbor] = curr
+                visited[neighbor] = True
+                neighbor.make_open()
+                queue.enqueue(neighbor)
+            draw_boxes()
+
+    start.make_start()
+    draw_boxes()
+
+def createButtons():
+    a_star_button = Button("A*", WIDTH / 2 - 100, 300, 200, 50, 40, "navy")
+    dijkstra_button = Button("Dijkstra", WIDTH / 2 - 100, 400, 200, 50, 40, "navy")
+    BFS_button = Button("BFS", WIDTH / 2 - 100, 500, 200, 50, 40, "navy")
 
 def main():
     # Standard pygame event loop
     algorithm = ""
     inMenu = True
     started = False
-    start = grid[1][1]
+    start = None
     end = None
     end_exists = False
     while True:
@@ -247,9 +312,8 @@ def main():
                 sys.exit()
             if inMenu:
                 draw_menu()
-                a_star_button = Button("A*", WIDTH / 2 - 100, 300, 200, 50, 40, "navy")
-                dijkstra_button = Button("Dijkstra", WIDTH / 2 - 100, 400, 200, 50, 40, "navy")
-                BFS_button = Button("BFS", WIDTH / 2 - 100, 500, 200, 50, 40, "navy")
+                createButtons()
+                
 
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -297,11 +361,16 @@ def main():
                             end = grid[i][j]
                             end_exists = True
 
+                    if event.key == pygame.K_s:
+                        i = x // BOX_WIDTH
+                        j = y // BOX_HEIGHT
+                        start = grid[i][j]
+                        start.make_start()
 
                 draw_boxes(grid)
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE and not started and end != None:
+                    if event.key == pygame.K_SPACE and not started and end != None and start != None:
                         
                         for i in grid:
                             for spot in i:
