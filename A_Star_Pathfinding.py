@@ -59,6 +59,9 @@ class Box:
     def get_pos(self):
         return (self.col, self.row)
 
+    def get_color(self):
+        return self.color
+
     def update_neighbors(self, grid):
         self.neighbors = []
         if self.row < ROWS - 1 and not grid[self.row + 1][self.col].is_barrier(): # DOWN
@@ -242,8 +245,59 @@ function Dijkstra(Graph, source):
 18
 19      return dist[], prev[]
 """
+
+class Stack:
+    def __init__(self):
+        self.lst = []
+        self.size = 0
+
+    def push(self, value):
+        self.lst.append(value)
+        self.size += 1
+
+    def pop(self):
+        if self.size > 0:
+            self.size -= 1
+            return self.lst.pop()
+
+    def isEmpty(self):
+        return self.size == 0
+
 def DIJKSTRA(draw_boxes, grid, start, end):
-    return
+    dist = {spot:float('inf') for row in grid for spot in row if spot.color != BLACK}
+    dist[start] = 0
+    prev = {spot:None for row in grid for spot in row if spot.color != BLACK}
+    Q = dist.copy()
+
+    while Q:
+        if dist[end] != float('inf'):
+            end.make_end()
+            current = end
+            while prev[current] in prev:
+                current = prev[current]
+                current.make_path()
+            return True
+
+        u = min(zip(Q.values(), Q.keys()))[1] 
+        Q.pop(min(zip(Q.values(), Q.keys()))[1])
+        if dist[u] == float('inf'):
+            return False
+        for neighbor in u.neighbors:
+            if neighbor in list(Q.keys()):
+                neighbor.make_open()
+                alt = dist[u] + 1
+                if alt < dist[neighbor]:
+                    dist[neighbor] = alt
+                    Q[neighbor] = alt
+                    prev[neighbor] = u
+
+        draw_boxes()
+        if u != start:
+            u.make_closed()
+    return False
+    
+    
+    
 
 
 class myQueue:
